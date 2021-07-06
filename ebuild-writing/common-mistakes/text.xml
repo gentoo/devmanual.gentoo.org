@@ -381,6 +381,17 @@ Make sure when you bump a version, the stable KEYWORDS are all marked as
 </body>
 </subsection>
 <subsection>
+<title>Unused flags in IUSE</title>
+<body>
+
+<p>
+Sometimes obsolete USE flags remain in IUSE despite having no function. Remember
+to prune these.
+</p>
+
+</body>
+</subsection>
+<subsection>
 <title>SLOT missing</title>
 <body>
 
@@ -400,12 +411,14 @@ SLOT="0"
 <body>
 
 <p>
+Make sure the <c>DESCRIPTION</c> is not overly long. Good descriptions will
+describe the main function of the package in a sentence.
+
 Please check if the <c>HOMEPAGE</c> variable is right and leads users to the
-right page if they want to find out more about the package. And make sure
-the <c>DESCRIPTION</c> is not overly long. Good descriptions will describe
-the main function of the package in a sentence. If no homepage for the package
-is available, set the <c>HOMEPAGE</c> variable to
-<c>https://wiki.gentoo.org/wiki/No_homepage</c>.
+right page if they want to find out more about the package. If no homepage for
+the package is available, set the <c>HOMEPAGE</c> variable to
+<c>https://wiki.gentoo.org/wiki/No_homepage</c>. Please also strive to test
+HTTPS support for the site used in <c>HOMEPAGE</c>.
 </p>
 
 </body>
@@ -477,8 +490,43 @@ at least when the ebuild hits the stable branch.
 </p>
 </body>
 </subsection>
-</section>
 
+<subsection>
+<title>Not using latest EAPI</title>
+<body>
+
+<p>
+Often, user-submitted ebuilds do not use the latest EAPI and may even
+be several versions behind. EAPIs bring new helper functions and improved
+methods for completing common tasks. It's recommended that submitted ebuilds
+use the latest EAPI possible (subject to eclass constraints) to improve
+the ebuild's quality and ease review.
+</p>
+</body>
+</subsection>
+
+<subsection>
+<title>Calling pkg-config directly</title>
+<body>
+
+<p>
+You should not call <c>pkg-config</c> directly in ebuilds because this is
+problematic for e.g. cross-compiling. The correct helper respects
+<c>${PKG_CONFIG}</c>. Instead, use <c>tc-getPKG_CONFIG</c> from
+<c>toolchain-funcs.eclass</c>, e.g.
+</p>
+
+<codesample lang="ebuild">
+sed -i -e "s:-lncurses:$($(tc-getPKG_CONFIG) --libs ncurses):" || die
+</codesample>
+
+<p>
+Don't then forget to add <c>virtual/pkgconfig</c> to BDEPEND!
+</p>
+
+</body>
+</subsection>
+</section>
 
 <section>
 <title>Common Ebuild Submission Mistakes</title>
